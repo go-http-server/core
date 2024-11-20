@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+
+	"github.com/go-http-server/core/utils"
+)
 
 func main() {
-	fmt.Println("Hello, This is core backend")
+	env, err := utils.LoadEnviromentVariables("./")
+	if err != nil {
+		log.Fatal("Cannot load enviroment variables: ", err)
+	}
+
+	fmt.Println(env.DB_SOURCE)
 }
