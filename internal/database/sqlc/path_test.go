@@ -20,6 +20,11 @@ func createRandomPath(t *testing.T) {
 		PathName:        pathName,
 	})
 	require.NoError(t, err)
+	require.NotEmpty(t, pathFromDb)
+
+	require.Equal(t, path, pathFromDb.Path)
+	require.Equal(t, pathName, pathFromDb.PathName)
+	require.Equal(t, pathDescription, pathFromDb.PathDescription.String)
 }
 
 func TestCreatePath(t *testing.T) {

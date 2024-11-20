@@ -13,7 +13,7 @@ import (
 var testStore Store
 
 func TestMain(m *testing.M) {
-	env, err := utils.LoadEnviromentVariables("../../")
+	env, err := utils.LoadEnviromentVariables("../../../")
 	if err != nil {
 		log.Fatal("Cannot load enviroment variables file: ", err)
 	}
