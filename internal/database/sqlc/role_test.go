@@ -30,3 +30,18 @@ func createRandomRole(t *testing.T) {
 func TestCreateRole(t *testing.T) {
 	createRandomRole(t)
 }
+
+func TestListRoles(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		createRandomRole(t)
+	}
+
+	arg := GetRolesParams{
+		Limit:  5,
+		Offset: 0,
+	}
+
+	listRoles, err := testStore.GetRoles(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, listRoles, 5)
+}
