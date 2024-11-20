@@ -12,6 +12,8 @@ services:
       POSTGRESQL_USER: "postgres"
       POSTGRESQL_DATABASE: "core"
       POSTGRESQL_REPLICATION_USE_PASSFILE: false
+      POSTGRESQL_TIMEZONE: "Asia/Ho_Chi_Minh"
+      POSTGRESQL_LOG_TIMEZONE: "Asia/Ho_Chi_Minh"
     ports:
       - 5432:5432
     healthcheck:
