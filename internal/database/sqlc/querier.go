@@ -10,6 +10,8 @@ import (
 
 type Querier interface {
 	CreatePath(ctx context.Context, arg CreatePathParams) (Path, error)
+	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
+	GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, error)
 	ListPaths(ctx context.Context, arg ListPathsParams) ([]Path, error)
 }
 
