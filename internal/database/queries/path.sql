@@ -1,6 +1,8 @@
 -- name: ListPaths :many
 SELECT * FROM paths
-ORDER BY id;
+ORDER BY id
+LIMIT $1
+OFFSET $2;
 
 -- name: CreatePath :one
 INSERT INTO paths (
