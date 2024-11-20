@@ -13,6 +13,7 @@ type Querier interface {
 	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
 	GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, error)
 	ListPaths(ctx context.Context, arg ListPathsParams) ([]Path, error)
+	UpdateRole(ctx context.Context, arg UpdateRoleParams) (Role, error)
 }
 
 var _ Querier = (*Queries)(nil)

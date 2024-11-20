@@ -9,3 +9,10 @@ INSERT INTO roles (
   role_name, description
 ) VALUES ($1, $2)
 RETURNING *;
+
+-- name: UpdateRole :one
+UPDATE roles
+SET role_name = coalesce(sqlc.narg(role_name), role_name),
+    description = coalesce(sqlc.narg(description), description)
+WHERE id = sqlc.narg(id)
+RETURNING *;
