@@ -30,3 +30,18 @@ func createRandomPath(t *testing.T) {
 func TestCreatePath(t *testing.T) {
 	createRandomPath(t)
 }
+
+func TestListPaths(t *testing.T) {
+	for i := 0; i < 5; i++ {
+		createRandomPath(t)
+	}
+
+	arg := ListPathsParams{
+		Offset: 0,
+		Limit:  5,
+	}
+
+	listPaths, err := testStore.ListPaths(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, listPaths, 5)
+}

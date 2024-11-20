@@ -40,10 +40,17 @@ func (q *Queries) CreatePath(ctx context.Context, arg CreatePathParams) (Path, e
 const listPaths = `-- name: ListPaths :many
 SELECT id, path_name, path, path_description FROM paths
 ORDER BY id
+LIMIT $1
+OFFSET $2
 `
 
-func (q *Queries) ListPaths(ctx context.Context) ([]Path, error) {
-	rows, err := q.db.Query(ctx, listPaths)
+type ListPathsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+func (q *Queries) ListPaths(ctx context.Context, arg ListPathsParams) ([]Path, error) {
+	rows, err := q.db.Query(ctx, listPaths, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

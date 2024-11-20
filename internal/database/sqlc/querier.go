@@ -10,7 +10,7 @@ import (
 
 type Querier interface {
 	CreatePath(ctx context.Context, arg CreatePathParams) (Path, error)
-	ListPaths(ctx context.Context) ([]Path, error)
+	ListPaths(ctx context.Context, arg ListPathsParams) ([]Path, error)
 }
 
 var _ Querier = (*Queries)(nil)
