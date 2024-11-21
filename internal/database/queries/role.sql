@@ -14,5 +14,5 @@ RETURNING *;
 UPDATE roles
 SET role_name = coalesce(sqlc.narg(role_name), role_name),
     description = coalesce(sqlc.narg(description), description)
-WHERE id = sqlc.narg(id)
+WHERE id = $1
 RETURNING *;

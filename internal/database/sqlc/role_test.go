@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createRandomRole(t *testing.T) {
+func createRandomRole(t *testing.T) Role {
 	roleName := utils.RandomString(32)
 	roleDescription := utils.RandomString(32)
 
@@ -25,6 +25,8 @@ func createRandomRole(t *testing.T) {
 
 	require.Equal(t, roleName, role.RoleName)
 	require.Equal(t, roleDescription, role.Description.String)
+
+	return role
 }
 
 func TestCreateRole(t *testing.T) {
@@ -44,4 +46,22 @@ func TestListRoles(t *testing.T) {
 	listRoles, err := testStore.GetRoles(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, listRoles, 5)
+}
+
+func TestUpdateRole(t *testing.T) {
+	randomRole := createRandomRole(t)
+	roleName := utils.RandomString(6)
+	roleDescription := utils.RandomString(12)
+
+	arg := UpdateRoleParams{
+		ID:          randomRole.ID,
+		RoleName:    pgtype.Text{String: roleName, Valid: true},
+		Description: pgtype.Text{String: roleDescription, Valid: true},
+	}
+
+	roleUpdated, err := testStore.UpdateRole(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, roleUpdated)
+	require.Equal(t, roleName, roleUpdated.RoleName)
+	require.Equal(t, roleDescription, roleUpdated.Description.String)
 }

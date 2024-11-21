@@ -64,20 +64,20 @@ func (q *Queries) GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, err
 
 const updateRole = `-- name: UpdateRole :one
 UPDATE roles
-SET role_name = coalesce($1, role_name),
-    description = coalesce($2, description)
-WHERE id = $3
+SET role_name = coalesce($2, role_name),
+    description = coalesce($3, description)
+WHERE id = $1
 RETURNING id, role_name, description
 `
 
 type UpdateRoleParams struct {
+	ID          int64       `json:"id"`
 	RoleName    pgtype.Text `json:"role_name"`
 	Description pgtype.Text `json:"description"`
-	ID          pgtype.Int8 `json:"id"`
 }
 
 func (q *Queries) UpdateRole(ctx context.Context, arg UpdateRoleParams) (Role, error) {
-	row := q.db.QueryRow(ctx, updateRole, arg.RoleName, arg.Description, arg.ID)
+	row := q.db.QueryRow(ctx, updateRole, arg.ID, arg.RoleName, arg.Description)
 	var i Role
 	err := row.Scan(&i.ID, &i.RoleName, &i.Description)
 	return i, err
