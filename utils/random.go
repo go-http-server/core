@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand/v2"
 	"strings"
 )
@@ -17,4 +18,8 @@ func RandomString(lengthStringBuilder int) string {
 	}
 
 	return substrings.String()
+}
+
+func RandomEmail() string {
+	return fmt.Sprintf("%s@gmail.com", RandomString(6))
 }
