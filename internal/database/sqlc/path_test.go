@@ -68,3 +68,15 @@ func TestUpdatePath(t *testing.T) {
 	require.Equal(t, path, pathStore.Path)
 	require.Equal(t, pathDescription, pathStore.PathDescription.String)
 }
+
+func TestGetOnePath(t *testing.T) {
+	randomPath := createRandomPath(t)
+
+	pathStore, err := testStore.GetOnePath(context.Background(), randomPath.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, pathStore)
+	require.Equal(t, randomPath.ID, pathStore.ID)
+	require.Equal(t, randomPath.Path, pathStore.Path)
+	require.Equal(t, randomPath.PathName, pathStore.PathName)
+	require.Equal(t, randomPath.PathDescription, pathStore.PathDescription)
+}
