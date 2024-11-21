@@ -32,6 +32,7 @@ func (server *Server) setupRouter() {
 	{
 		noRequiredAuthRoute := api.Group("/")
 		noRequiredAuthRoute.POST("/auth/register", server.RegisterUser)
+		noRequiredAuthRoute.POST("/auth/login", server.LoginUser)
 	}
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{

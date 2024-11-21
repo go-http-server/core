@@ -11,8 +11,13 @@ import (
 type RegisterUserRequestParams struct {
 	Username string `json:"username" binding:"required,min=6,alphanum,lowercase"`
 	Email    string `json:"email" binding:"required,min=12,email"`
-	Password string `json:"password" binding:"required,min=6,containsany=!@#?"`
+	Password string `json:"password" binding:"required,min=6,containsany=!@#$?&*"`
 	FullName string `json:"full_name" binding:"required,min=6"`
+}
+
+type LoginUserRequestParams struct {
+	Identifier string `json:"identifier" binding:"required,min=6"`
+	Password   string `json:"password" binding:"required,min=6,containsany=!@#$?&*"`
 }
 
 func (server *Server) RegisterUser(ctx *gin.Context) {
@@ -24,9 +29,17 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
+	hashPassword, err := utils.HashPassword(req.Password)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	arg := database.CreateUserParams{
 		Username:       req.Username,
-		HashedPassword: req.Password,
+		HashedPassword: hashPassword,
 		Email:          req.Email,
 		FullName:       req.FullName,
 		RoleID:         10,
@@ -56,4 +69,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, user)
+}
+
+func (server *Server) LoginUser(ctx *gin.Context) {
 }
