@@ -1,10 +1,44 @@
 package token
 
-import "time"
+import (
+	"errors"
+	"fmt"
+	"time"
+
+	"github.com/go-http-server/core/utils"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
+)
 
 type Payload struct {
+	ID        uuid.UUID `json:"id"`
 	Username  string    `json:"username"`
-	RoleId    string    `json:"role_id"`
+	RoleId    int       `json:"role_id"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
+	jwt.RegisteredClaims
+}
+
+func NewPayload(username string, roleId int, duration time.Duration) (*Payload, error) {
+	uuidv4, err := uuid.NewRandom()
+	if err != nil {
+		return nil, fmt.Errorf("Cannot generate uuid: %s", err)
+	}
+
+	payload := &Payload{
+		ID:        uuidv4,
+		Username:  username,
+		RoleId:    roleId,
+		IssuedAt:  time.Now(),
+		ExpiredAt: time.Now().Add(duration),
+	}
+
+	return payload, nil
+}
+
+func (payload *Payload) Valid() error {
+	if time.Now().After(payload.ExpiredAt) {
+		return errors.New(utils.TOKEN_EXPIRED)
+	}
+	return nil
 }
