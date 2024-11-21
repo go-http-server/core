@@ -30,6 +30,17 @@ func (q *Queries) CreateRole(ctx context.Context, arg CreateRoleParams) (Role, e
 	return i, err
 }
 
+const getOneRole = `-- name: GetOneRole :one
+SELECT id, role_name, description FROM roles WHERE id = $1
+`
+
+func (q *Queries) GetOneRole(ctx context.Context, id int64) (Role, error) {
+	row := q.db.QueryRow(ctx, getOneRole, id)
+	var i Role
+	err := row.Scan(&i.ID, &i.RoleName, &i.Description)
+	return i, err
+}
+
 const getRoles = `-- name: GetRoles :many
 SELECT id, role_name, description FROM roles
 ORDER BY id

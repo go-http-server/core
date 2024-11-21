@@ -65,3 +65,15 @@ func TestUpdateRole(t *testing.T) {
 	require.Equal(t, roleName, roleUpdated.RoleName)
 	require.Equal(t, roleDescription, roleUpdated.Description.String)
 }
+
+func TestGetOneRole(t *testing.T) {
+	randomRole := createRandomRole(t)
+
+	storeRole, err := testStore.GetOneRole(context.Background(), randomRole.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, storeRole)
+
+	require.Equal(t, randomRole.ID, storeRole.ID)
+	require.Equal(t, randomRole.RoleName, storeRole.RoleName)
+	require.Equal(t, randomRole.Description, storeRole.Description)
+}

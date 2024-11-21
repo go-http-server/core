@@ -4,6 +4,9 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
+-- name: GetOneRole :one
+SELECT * FROM roles WHERE id = $1;
+
 -- name: CreateRole :one
 INSERT INTO roles (
   role_name, description
