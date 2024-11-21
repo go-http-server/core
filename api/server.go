@@ -28,14 +28,10 @@ func (server *Server) setupRouter() {
 	}
 	router := gin.Default()
 
-	api := router.Group("/api")
+	api := router.Group("/api/v1")
 	{
-		noAuthRoute := api.Group("/")
-		noAuthRoute.GET("/ping", func(ctx *gin.Context) {
-			ctx.JSON(200, gin.H{
-				"message": "pong",
-			})
-		})
+		noRequiredAuthRoute := api.Group("/")
+		noRequiredAuthRoute.POST("/auth/register", server.RegisterUser)
 	}
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{
