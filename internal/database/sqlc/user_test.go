@@ -3,8 +3,10 @@ package database
 import (
 	"context"
 	"testing"
+	"time"
 
 	"github.com/go-http-server/core/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 )
 
@@ -64,4 +66,29 @@ func TestGetUser(t *testing.T) {
 	require.Equal(t, randomUser.RoleID, userFromDB.RoleID)
 	require.Equal(t, randomUser.Token, userFromDB.Token)
 	require.Equal(t, randomUser.PasswordChangedAt, userFromDB.PasswordChangedAt)
+}
+
+func TestUpdateUser(t *testing.T) {
+	randomUser := createRandomUser(t)
+
+	updateFullName := utils.RandomString(18)
+	updateEmail := utils.RandomEmail()
+
+	updatedUser, err := testStore.UpdateUser(context.Background(), UpdateUserParams{
+		FullName: pgtype.Text{String: updateFullName, Valid: true},
+		Email:    pgtype.Text{String: updateEmail, Valid: true},
+		Username: randomUser.Username,
+	})
+
+	require.NoError(t, err)
+	require.NotEmpty(t, updatedUser)
+
+	require.Equal(t, updateFullName, updatedUser.FullName)
+	require.Equal(t, updateEmail, updatedUser.Email)
+	require.Equal(t, randomUser.Username, updatedUser.Username)
+
+	require.Equal(t, randomUser.Token, updatedUser.Token)
+	require.Equal(t, randomUser.HashedPassword, randomUser.HashedPassword)
+	require.Equal(t, randomUser.RoleID, updatedUser.RoleID)
+	require.WithinDuration(t, randomUser.CreatedAt.Time, updatedUser.CreatedAt.Time, time.Minute)
 }
