@@ -9,9 +9,12 @@ import (
 )
 
 type Querier interface {
+	CreateAccessPath(ctx context.Context, arg CreateAccessPathParams) (AccessPath, error)
 	CreatePath(ctx context.Context, arg CreatePathParams) (Path, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
+	DeleteAccessPath(ctx context.Context, id int64) error
+	GetAccessPath(ctx context.Context, roleID int64) ([]AccessPath, error)
 	GetOnePath(ctx context.Context, id int64) (Path, error)
 	GetOneRole(ctx context.Context, id int64) (Role, error)
 	GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, error)
