@@ -46,3 +46,22 @@ func createRandomUser(t *testing.T) User {
 func TestCreateUser(t *testing.T) {
 	createRandomUser(t)
 }
+
+func TestGetUser(t *testing.T) {
+	randomUser := createRandomUser(t)
+
+	userFromDB, err := testStore.GetUser(context.Background(), randomUser.Username)
+	require.NoError(t, err)
+	require.NotEmpty(t, userFromDB)
+	require.Equal(t, randomUser.Username, userFromDB.Username)
+	require.Equal(t, randomUser.CodeVerifyEmail, userFromDB.CodeVerifyEmail)
+	require.Equal(t, randomUser.CodeResetPassword, userFromDB.CodeResetPassword)
+	require.Equal(t, randomUser.HashedPassword, userFromDB.HashedPassword)
+	require.Equal(t, randomUser.Email, userFromDB.Email)
+
+	require.Equal(t, randomUser.IsVerifiedEmail, userFromDB.IsVerifiedEmail)
+	require.Equal(t, randomUser.FullName, userFromDB.FullName)
+	require.Equal(t, randomUser.RoleID, userFromDB.RoleID)
+	require.Equal(t, randomUser.Token, userFromDB.Token)
+	require.Equal(t, randomUser.PasswordChangedAt, userFromDB.PasswordChangedAt)
+}
