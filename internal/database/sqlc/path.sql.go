@@ -37,6 +37,22 @@ func (q *Queries) CreatePath(ctx context.Context, arg CreatePathParams) (Path, e
 	return i, err
 }
 
+const getOnePath = `-- name: GetOnePath :one
+SELECT id, path_name, path, path_description FROM paths WHERE id = $1
+`
+
+func (q *Queries) GetOnePath(ctx context.Context, id int64) (Path, error) {
+	row := q.db.QueryRow(ctx, getOnePath, id)
+	var i Path
+	err := row.Scan(
+		&i.ID,
+		&i.PathName,
+		&i.Path,
+		&i.PathDescription,
+	)
+	return i, err
+}
+
 const listPaths = `-- name: ListPaths :many
 SELECT id, path_name, path, path_description FROM paths
 ORDER BY id
@@ -72,4 +88,37 @@ func (q *Queries) ListPaths(ctx context.Context, arg ListPathsParams) ([]Path, e
 		return nil, err
 	}
 	return items, nil
+}
+
+const updatePath = `-- name: UpdatePath :one
+UPDATE paths
+  SET path_name = coalesce($2, path_name),
+      path = coalesce($3, path),
+      path_description = coalesce($4, path_description)
+  WHERE id = $1
+  RETURNING id, path_name, path, path_description
+`
+
+type UpdatePathParams struct {
+	ID              int64       `json:"id"`
+	PathName        pgtype.Text `json:"path_name"`
+	Path            pgtype.Text `json:"path"`
+	PathDescription pgtype.Text `json:"path_description"`
+}
+
+func (q *Queries) UpdatePath(ctx context.Context, arg UpdatePathParams) (Path, error) {
+	row := q.db.QueryRow(ctx, updatePath,
+		arg.ID,
+		arg.PathName,
+		arg.Path,
+		arg.PathDescription,
+	)
+	var i Path
+	err := row.Scan(
+		&i.ID,
+		&i.PathName,
+		&i.Path,
+		&i.PathDescription,
+	)
+	return i, err
 }
