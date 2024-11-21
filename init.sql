@@ -45,4 +45,6 @@ ALTER TABLE "users" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
 
 ALTER TABLE "access_paths" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
 
+CREATE INDEX ON "access_paths" ("role_id");
+
 ALTER TABLE "access_paths" ADD FOREIGN KEY ("path_id") REFERENCES "paths" ("id");
