@@ -54,5 +54,9 @@ func (maker *JWTMaker) VerifyToken(token string) (*Payload, error) {
 		return nil, errors.New(utils.ERROR_CONVERT_TOKEN)
 	}
 
-	return payload, err
+	if err = payload.Valid(); err != nil {
+		return nil, errors.New(utils.TOKEN_EXPIRED)
+	}
+
+	return payload, nil
 }
