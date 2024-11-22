@@ -23,3 +23,7 @@ func RandomString(lengthStringBuilder int) string {
 func RandomEmail() string {
 	return fmt.Sprintf("%s@gmail.com", RandomString(6))
 }
+
+func RandomInt(from, to int) int {
+	return from + rand.IntN(to-from+1)
+}
