@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Migration database
-        run: psql -h localhost -U postgres -p 5432 -d bank-ytb -W -a -f ./init.sql
+        run: psql -h localhost -U postgres -p 5432 -d core -W -a -f ./init.sql
 
       - name: Copy file secrets.env to load virtual environment variable
         run: cp .env.example .env
@@ -55,7 +55,7 @@ jobs:
       #   run: go mod vendor
 
       - name: Testing core execute CRUD database
-        run: go test -v -timeout 30s -cover -short ./database/sqlc/ -mo=vendor
+        run: go test -v -timeout 30s -cover -short ./internal/database/sqlc/ -mod=vendor
 
       # - name: Testing Token
       #   run: go test -v -timeout 30s -cover -short ./plugin/pkg/token/
