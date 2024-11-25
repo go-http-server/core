@@ -5,7 +5,9 @@ import (
 )
 
 type EnviromentVariables struct {
-	DB_SOURCE string `mapstructure:"DB_SOURCE"`
+	DB_SOURCE           string `mapstructure:"DB_SOURCE"`
+	ENVIRONMENT         string `mapstructure:"ENVIRONMENT"`
+	HTTP_SERVER_ADDRESS string `mapstructure:"HTTP_SERVER_ADDRESS"`
 }
 
 func LoadEnviromentVariables(path string) (config EnviromentVariables, err error) {
