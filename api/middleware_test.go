@@ -39,6 +39,40 @@ func TestAuthMiddleware(t *testing.T) {
 				require.Equal(t, http.StatusOK, rr.Code)
 			},
 		},
+		{
+			name:      "NO_AUTH_HEADER",
+			setupAuth: func(t *testing.T, r *http.Request, tm token.TokenMaker) {},
+			checkResponse: func(t *testing.T, rr *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, rr.Code)
+			},
+		},
+		{
+			name: "UNSUPPORT_AUTH_TYPE_HEADER",
+			setupAuth: func(t *testing.T, r *http.Request, tm token.TokenMaker) {
+				addAuthMiddlware(t, r, tm, "unsupported", utils.RandomString(6), utils.RandomInt(1, 10), time.Minute)
+			},
+			checkResponse: func(t *testing.T, rr *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, rr.Code)
+			},
+		},
+		{
+			name: "INVALID_FORMAT_AUTH_HEADER",
+			setupAuth: func(t *testing.T, r *http.Request, tm token.TokenMaker) {
+				addAuthMiddlware(t, r, tm, "", utils.RandomString(6), utils.RandomInt(1, 10), time.Minute)
+			},
+			checkResponse: func(t *testing.T, rr *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, rr.Code)
+			},
+		},
+		{
+			name: "TOKEN_EXPIRED",
+			setupAuth: func(t *testing.T, r *http.Request, tm token.TokenMaker) {
+				addAuthMiddlware(t, r, tm, authorizationTypeBearer, utils.RandomString(6), utils.RandomInt(1, 10), -time.Minute)
+			},
+			checkResponse: func(t *testing.T, rr *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusUnauthorized, rr.Code)
+			},
+		},
 	}
 
 	for _, currentCase := range testCases {
