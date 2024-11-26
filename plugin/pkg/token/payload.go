@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/go-http-server/core/utils"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
@@ -16,7 +15,7 @@ type Payload struct {
 	RoleId    int       `json:"role_id"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
-	jwt.RegisteredClaims
+	// jwt.RegisteredClaims
 }
 
 func NewPayload(username string, roleId int, duration time.Duration) (*Payload, error) {
