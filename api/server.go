@@ -3,19 +3,23 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
+	"github.com/go-http-server/core/plugin/pkg/token"
 	"github.com/go-http-server/core/utils"
 )
 
 type Server struct {
-	store  database.Store
-	router *gin.Engine
-	env    utils.EnviromentVariables
+	store      database.Store
+	router     *gin.Engine
+	env        utils.EnviromentVariables
+	tokenMaker token.TokenMaker
 }
 
 func NewServer(store database.Store, env utils.EnviromentVariables) (*Server, error) {
+	tokenMaker := token.NewPasetoMaker()
 	server := &Server{
-		store: store,
-		env:   env,
+		store:      store,
+		env:        env,
+		tokenMaker: tokenMaker,
 	}
 	server.setupRouter()
 
@@ -48,4 +52,10 @@ func (server *Server) setupRouter() {
 
 func (server *Server) StartServer(address string) error {
 	return server.router.Run(address)
+}
+
+func errorResponse(err error) gin.H {
+	return gin.H{
+		"message": err.Error(),
+	}
 }
