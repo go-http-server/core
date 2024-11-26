@@ -57,11 +57,11 @@ jobs:
       - name: Testing core execute CRUD database
         run: go test -v -timeout 30s -cover -short ./internal/database/sqlc/ -mod=vendor
 
-      # - name: Testing Token
-      #   run: go test -v -timeout 30s -cover -short ./plugin/pkg/token/
-      #
+      - name: Testing Token
+        run: go test -v -timeout 30s -cover -short ./plugin/pkg/token/
+
       # - name: Testing send email
       #   run: go test -v -timeout 30s -cover ./plugin/pkg/mailer/
-      #
-      # - name: Testing API
-      #   run: go test -v -timeout 30s -cover -short ./api/
+
+      - name: Testing API
+        run: go test -v -timeout 30s -cover -short ./api/
