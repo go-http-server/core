@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/google/uuid"
 	"github.com/wneessen/go-mail"
 )
 
 type UserReceive struct {
 	Username     string
 	EmailAddress string
-	Code         uuid.UUID
+	Code         string
 	Fullname     string
 }
 

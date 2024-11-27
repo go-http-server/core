@@ -6,7 +6,10 @@ import (
 	"strings"
 )
 
-const alphabet = "abcdefghijklmnopqrstuvwxyz"
+const (
+	alphabet = "abcdefghijklmnopqrstuvwxyz"
+	numeric  = "0123456789"
+)
 
 func RandomString(lengthStringBuilder int) string {
 	var substrings strings.Builder
@@ -26,4 +29,16 @@ func RandomEmail() string {
 
 func RandomInt(from, to int) int {
 	return from + rand.IntN(to-from+1)
+}
+
+func RandomCode() string {
+	var substrings strings.Builder
+	lengthNumeric := len(numeric)
+
+	for i := 0; i < 6; i++ {
+		c := numeric[rand.IntN(lengthNumeric)]
+		substrings.WriteByte(c)
+	}
+
+	return substrings.String()
 }
