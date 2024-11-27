@@ -1,12 +1,16 @@
 package api
 
 import (
+	"errors"
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/go-http-server/core/utils"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -20,6 +24,20 @@ type RegisterUserRequestParams struct {
 type LoginUserRequestParams struct {
 	Identifier string `json:"identifier" binding:"required,min=6"`
 	Password   string `json:"password" binding:"required,min=6,containsany=!@#$?&*"`
+}
+
+type UserResponseLoginRequest struct {
+	Username          string    `json:"username"`
+	Email             string    `json:"email"`
+	FullName          string    `json:"full_name"`
+	CreatedAt         time.Time `json:"created_at"`
+	PasswordChangedAt time.Time `json:"password_changed_at"`
+	IsVerifiedEmail   bool      `json:"is_verified_email"`
+}
+
+type loginResponseBody struct {
+	AccessToken string                   `json:"access_token"`
+	User        UserResponseLoginRequest `json:"user"`
 }
 
 func (server *Server) RegisterUser(ctx *gin.Context) {
@@ -88,4 +106,55 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 }
 
 func (server *Server) LoginUser(ctx *gin.Context) {
+	var req LoginUserRequestParams
+
+	if err := ctx.ShouldBind(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	args := database.GetUserParams{
+		Username: req.Identifier,
+		Email:    req.Identifier,
+	}
+
+	user, err := server.store.GetUser(ctx, args)
+	if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			ctx.JSON(http.StatusNotFound, errorResponse(errors.New("Khong tim thay nguoi dung nay")))
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	err = utils.ComparePassword(req.Password, user.HashedPassword)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(errors.New("Mat khau khong chinh xac")))
+		return
+	}
+
+	if !user.IsVerifiedEmail {
+		ctx.JSON(http.StatusForbidden, errorResponse(fmt.Errorf("Tai khoan chua duoc kich hoat, vui long kiem tra: %s", user.Email)))
+		return
+	}
+
+	accessToken, err := server.tokenMaker.CreateToken(user.Username, int(user.RoleID), server.env.TIME_EXPIRED_TOKEN)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	ctx.JSON(http.StatusOK, loginResponseBody{
+		AccessToken: accessToken,
+		User: UserResponseLoginRequest{
+			Username:          user.Username,
+			Email:             user.Email,
+			FullName:          user.FullName,
+			IsVerifiedEmail:   user.IsVerifiedEmail,
+			PasswordChangedAt: user.PasswordChangedAt.Time,
+			CreatedAt:         user.CreatedAt.Time,
+		},
+	})
 }
