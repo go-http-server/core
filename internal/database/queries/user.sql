@@ -3,8 +3,8 @@ SELECT * FROM users WHERE username = $1;
 
 -- name: CreateUser :one
 INSERT INTO users (
-  username, hashed_password, email, full_name, role_id
-) VALUES ($1, $2, $3, $4, $5)
+  username, hashed_password, email, full_name, role_id, code_verify_email
+) VALUES ($1, $2, $3, $4, $5, $6)
   RETURNING *;
 
 -- name: UpdateUser :one

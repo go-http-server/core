@@ -5,7 +5,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
+	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/go-http-server/core/utils"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type RegisterUserRequestParams struct {
@@ -37,15 +39,29 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		return
 	}
 
-	arg := database.CreateUserParams{
-		Username:       req.Username,
-		HashedPassword: hashPassword,
-		Email:          req.Email,
-		FullName:       req.FullName,
-		RoleID:         10,
+	args := database.CreateUserTXParams{
+		CreateUserParams: database.CreateUserParams{
+			Username:        req.Username,
+			HashedPassword:  hashPassword,
+			Email:           req.Email,
+			FullName:        req.FullName,
+			RoleID:          10,
+			CodeVerifyEmail: pgtype.Text{String: utils.RandomCode(), Valid: true},
+		},
+		AfterCreate: func(u database.User) error {
+			subject := "[Go core] Kích hoạt tài khoản"
+			pathTemplate := "./templates/verify_email.html"
+			to := mailer.UserReceive{
+				Username:     u.Username,
+				EmailAddress: u.Email,
+				Code:         u.CodeVerifyEmail.String,
+				Fullname:     u.FullName,
+			}
+			return server.emailSender.SendWithTemplate(subject, pathTemplate, to, []string{})
+		},
 	}
 
-	user, err := server.store.CreateUser(ctx, arg)
+	user, err := server.store.CreateUserTX(ctx, args)
 	if err != nil {
 		errCodePgx := utils.ErrorCodePgxConstraint(err)
 		if errCodePgx == utils.UniqueViolation {

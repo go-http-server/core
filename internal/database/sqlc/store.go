@@ -9,6 +9,7 @@ import (
 
 type Store interface {
 	Querier
+	CreateUserTX(context.Context, CreateUserTXParams) (CreateUserTXResult, error)
 }
 
 // SQLStore provider all functions to execute SQL queries and transaction

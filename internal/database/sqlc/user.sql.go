@@ -13,17 +13,18 @@ import (
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-  username, hashed_password, email, full_name, role_id
-) VALUES ($1, $2, $3, $4, $5)
+  username, hashed_password, email, full_name, role_id, code_verify_email
+) VALUES ($1, $2, $3, $4, $5, $6)
   RETURNING username, code_verify_email, code_reset_password, created_at, hashed_password, email, is_verified_email, full_name, role_id, token, password_changed_at
 `
 
 type CreateUserParams struct {
-	Username       string `json:"username"`
-	HashedPassword string `json:"hashed_password"`
-	Email          string `json:"email"`
-	FullName       string `json:"full_name"`
-	RoleID         int64  `json:"role_id"`
+	Username        string      `json:"username"`
+	HashedPassword  string      `json:"hashed_password"`
+	Email           string      `json:"email"`
+	FullName        string      `json:"full_name"`
+	RoleID          int64       `json:"role_id"`
+	CodeVerifyEmail pgtype.Text `json:"code_verify_email"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
@@ -33,6 +34,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		arg.Email,
 		arg.FullName,
 		arg.RoleID,
+		arg.CodeVerifyEmail,
 	)
 	var i User
 	err := row.Scan(
