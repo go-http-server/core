@@ -9,6 +9,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.1
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
+	github.com/wneessen/go-mail v0.5.2
 	golang.org/x/crypto v0.29.0
 )
 

@@ -7,10 +7,13 @@ import (
 )
 
 type EnviromentVariables struct {
-	DB_SOURCE           string        `mapstructure:"DB_SOURCE"`
-	ENVIRONMENT         string        `mapstructure:"ENVIRONMENT"`
-	HTTP_SERVER_ADDRESS string        `mapstructure:"HTTP_SERVER_ADDRESS"`
-	TIME_EXPIRED_TOKEN  time.Duration `mapstructure:"TIME_EXPIRED_TOKEN"`
+	DB_SOURCE             string        `mapstructure:"DB_SOURCE"`
+	ENVIRONMENT           string        `mapstructure:"ENVIRONMENT"`
+	HTTP_SERVER_ADDRESS   string        `mapstructure:"HTTP_SERVER_ADDRESS"`
+	TIME_EXPIRED_TOKEN    time.Duration `mapstructure:"TIME_EXPIRED_TOKEN"`
+	EMAIL_ADDRESS_SENDER  string        `mapstructure:"EMAIL_ADDRESS_SENDER"`
+	EMAIL_PASSWORD_SENDER string        `mapstructure:"EMAIL_PASSWORD_SENDER"`
+	EMAIL_USERNAME_SENDER string        `mapstructure:"EMAIL_USERNAME_SENDER"`
 }
 
 func LoadEnviromentVariables(path string) (config EnviromentVariables, err error) {
