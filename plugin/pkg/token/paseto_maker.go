@@ -9,15 +9,16 @@ import (
 
 type PasetoMaker struct {
 	privateKey paseto.V4AsymmetricSecretKey
+	publicKey  paseto.V4AsymmetricPublicKey
 	parser     paseto.Parser
 }
 
-func NewPasetoMaker() TokenMaker {
-	privateKey := paseto.NewV4AsymmetricSecretKey()
-	parser := paseto.NewParserWithoutExpiryCheck()
+func NewPasetoMaker(privateKey paseto.V4AsymmetricSecretKey, parser paseto.Parser) TokenMaker {
+	publicKey := privateKey.Public()
 
 	return &PasetoMaker{
 		privateKey: privateKey,
+		publicKey:  publicKey,
 		parser:     parser,
 	}
 }
@@ -42,7 +43,7 @@ func (maker *PasetoMaker) CreateToken(username string, roleId int, duration time
 
 func (maker *PasetoMaker) VerifyToken(token string) (*Payload, error) {
 	payload := &Payload{}
-	tokenParser, err := maker.parser.ParseV4Public(maker.privateKey.Public(), token, nil)
+	tokenParser, err := maker.parser.ParseV4Public(maker.publicKey, token, nil)
 	if err != nil {
 		return nil, err
 	}

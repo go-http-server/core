@@ -1,6 +1,7 @@
 package api
 
 import (
+	"aidanwoods.dev/go-paseto"
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/token"
@@ -15,7 +16,9 @@ type Server struct {
 }
 
 func NewServer(store database.Store, env utils.EnviromentVariables) (*Server, error) {
-	tokenMaker := token.NewPasetoMaker()
+	privateKey := paseto.NewV4AsymmetricSecretKey()
+	parser := paseto.NewParserWithoutExpiryCheck()
+	tokenMaker := token.NewPasetoMaker(privateKey, parser)
 	server := &Server{
 		store:      store,
 		env:        env,

@@ -4,12 +4,15 @@ import (
 	"testing"
 	"time"
 
+	"aidanwoods.dev/go-paseto"
 	"github.com/go-http-server/core/utils"
 	"github.com/stretchr/testify/require"
 )
 
 func TestCreatePasetoAndVerifyTokenSuccess(t *testing.T) {
-	maker := NewPasetoMaker()
+	privateKey := paseto.NewV4AsymmetricSecretKey()
+	parser := paseto.NewParserWithoutExpiryCheck()
+	maker := NewPasetoMaker(privateKey, parser)
 
 	username := utils.RandomString(6)
 	roleId := utils.RandomInt(1, 10)
@@ -34,7 +37,9 @@ func TestCreatePasetoAndVerifyTokenSuccess(t *testing.T) {
 }
 
 func TestExpiredToken(t *testing.T) {
-	maker := NewPasetoMaker()
+	privateKey := paseto.NewV4AsymmetricSecretKey()
+	parser := paseto.NewParserWithoutExpiryCheck()
+	maker := NewPasetoMaker(privateKey, parser)
 
 	token, err := maker.CreateToken(utils.RandomString(6), utils.RandomInt(1, 10), -time.Minute)
 	require.NoError(t, err)
