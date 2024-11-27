@@ -83,14 +83,14 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 	if err != nil {
 		errCodePgx := utils.ErrorCodePgxConstraint(err)
 		if errCodePgx == utils.UniqueViolation {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
+			ctx.JSON(http.StatusConflict, gin.H{
 				"error_unique": err.Error(),
 			})
 			return
 		}
 
 		if errCodePgx == utils.ForeignKeyViolation {
-			ctx.JSON(http.StatusInternalServerError, gin.H{
+			ctx.JSON(http.StatusConflict, gin.H{
 				"error_foreignkey": err.Error(),
 			})
 			return

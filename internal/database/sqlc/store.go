@@ -37,7 +37,7 @@ func (sqlStore *SQLStore) execTX(ctx context.Context, fn func(*Queries) error) e
 		if errRollback := transaction.Rollback(ctx); errRollback != nil {
 			return fmt.Errorf("[ERROR - Rollback]: %s", errRollback)
 		}
-		return fmt.Errorf("[ERROR - Unknow]: %s", err)
+		return err
 	}
 
 	errCommit := transaction.Commit(ctx)
