@@ -1,6 +1,7 @@
 package token
 
 import (
+	"crypto/ed25519"
 	"testing"
 	"time"
 
@@ -50,4 +51,54 @@ func TestExpiredToken(t *testing.T) {
 	require.EqualError(t, err, utils.TOKEN_EXPIRED)
 	require.Nil(t, payload)
 	require.Empty(t, payload)
+}
+
+func TestKeyPairMalform(t *testing.T) {
+	pub, pri, err := ed25519.GenerateKey(nil)
+	require.NoError(t, err)
+	require.NotNil(t, pub)
+	require.NotNil(t, pri)
+
+	v4AsymmetricSecretKey, err := paseto.NewV4AsymmetricSecretKeyFromEd25519(pri)
+	require.NoError(t, err)
+	require.NotNil(t, v4AsymmetricSecretKey)
+
+	parser := paseto.NewParserWithoutExpiryCheck()
+	testTokenMaker := NewPasetoMaker(v4AsymmetricSecretKey, parser)
+	require.NotEmpty(t, testTokenMaker)
+
+	username := utils.RandomString(6)
+	roleId := utils.RandomInt(1, 10)
+	duration := time.Minute
+
+	token, err := testTokenMaker.CreateToken(username, roleId, duration)
+	require.NoError(t, err)
+	require.NotNil(t, token)
+
+	pubServer, priServer, err := ed25519.GenerateKey(nil)
+	require.NoError(t, err)
+	require.NotNil(t, pubServer)
+	require.NotNil(t, priServer)
+	require.NotEqual(t, pub, pubServer)
+	require.NotEqual(t, pri, priServer)
+
+	v4AsymmetricSecretKeyServer, err := paseto.NewV4AsymmetricSecretKeyFromEd25519(priServer)
+	require.NoError(t, err)
+	require.NotNil(t, v4AsymmetricSecretKeyServer)
+	require.NotEqual(t, v4AsymmetricSecretKey, v4AsymmetricSecretKeyServer)
+
+	serverTokenMaker := NewPasetoMaker(v4AsymmetricSecretKeyServer, parser)
+	payload1, errBadSignature1 := serverTokenMaker.VerifyToken(token)
+	require.Error(t, errBadSignature1)
+	require.Nil(t, payload1)
+
+	tokenServer, err := serverTokenMaker.CreateToken(username, roleId, duration)
+	require.NoError(t, err)
+	require.NotEqual(t, token, tokenServer)
+
+	payload2, errBadSignature2 := testTokenMaker.VerifyToken(tokenServer)
+	require.Error(t, errBadSignature2)
+	require.Nil(t, payload2)
+
+	require.ErrorIs(t, errBadSignature1, errBadSignature2)
 }
