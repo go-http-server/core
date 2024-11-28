@@ -18,7 +18,7 @@ func newTestServer(t *testing.T, store database.Store) *Server {
 		TIME_EXPIRED_TOKEN:  30 * time.Minute,
 	}
 
-	testServer, err := NewServer(store, env)
+	testServer, err := NewServer(store, env, nil)
 	require.NoError(t, err)
 	require.NotEmpty(t, testServer)
 

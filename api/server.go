@@ -7,17 +7,19 @@ import (
 	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/go-http-server/core/plugin/pkg/token"
 	"github.com/go-http-server/core/utils"
+	"github.com/go-http-server/core/worker"
 )
 
 type Server struct {
-	store       database.Store
-	router      *gin.Engine
-	env         utils.EnviromentVariables
-	tokenMaker  token.TokenMaker
-	emailSender mailer.EmailSender
+	store           database.Store
+	router          *gin.Engine
+	env             utils.EnviromentVariables
+	tokenMaker      token.TokenMaker
+	emailSender     mailer.EmailSender
+	taskDistributor worker.TaskDistributor
 }
 
-func NewServer(store database.Store, env utils.EnviromentVariables) (*Server, error) {
+func NewServer(store database.Store, env utils.EnviromentVariables, taskDistributor worker.TaskDistributor) (*Server, error) {
 	privateKey := paseto.NewV4AsymmetricSecretKey()
 	parser := paseto.NewParserWithoutExpiryCheck()
 	tokenMaker := token.NewPasetoMaker(privateKey, parser)
@@ -25,10 +27,11 @@ func NewServer(store database.Store, env utils.EnviromentVariables) (*Server, er
 	emailSender := mailer.NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)
 
 	server := &Server{
-		store:       store,
-		env:         env,
-		tokenMaker:  tokenMaker,
-		emailSender: emailSender,
+		store:           store,
+		env:             env,
+		tokenMaker:      tokenMaker,
+		emailSender:     emailSender,
+		taskDistributor: taskDistributor,
 	}
 	server.setupRouter()
 

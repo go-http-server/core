@@ -79,7 +79,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		},
 	}
 
-	user, err := server.store.CreateUserTX(ctx, args)
+	txResult, err := server.store.CreateUserTX(ctx, args)
 	if err != nil {
 		errCodePgx := utils.ErrorCodePgxConstraint(err)
 		if errCodePgx == utils.UniqueViolation {
@@ -101,8 +101,19 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		})
 		return
 	}
+	taskPayload := &mailer.UserReceive{
+		Username:     txResult.User.Username,
+		EmailAddress: txResult.User.Email,
+		Code:         txResult.User.CodeVerifyEmail.String,
+		Fullname:     txResult.User.FullName,
+	}
+	err = server.taskDistributor.DistributeTaskSendVerifyAccount(ctx, taskPayload)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 
-	ctx.JSON(http.StatusCreated, user)
+	ctx.JSON(http.StatusCreated, txResult.User)
 }
 
 func (server *Server) LoginUser(ctx *gin.Context) {
