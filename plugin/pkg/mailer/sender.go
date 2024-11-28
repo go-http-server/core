@@ -8,10 +8,10 @@ import (
 )
 
 type UserReceive struct {
-	Username     string
-	EmailAddress string
-	Code         string
-	Fullname     string
+	Username     string `json:"username"`
+	EmailAddress string `json:"email_address"`
+	Code         string `json:"code"`
+	Fullname     string `json:"full_name"`
 }
 
 type EmailSender interface {
