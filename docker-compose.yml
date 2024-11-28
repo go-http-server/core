@@ -33,6 +33,20 @@ services:
         max-file: "3"
     restart: unless-stopped
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis_serve_gocore
+    ports:
+      - 6379:6379
+    networks:
+      - core-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
 networks:
   core-network:
 volumes:
