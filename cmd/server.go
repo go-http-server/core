@@ -28,6 +28,7 @@ func main() {
 		Addr: env.REDIS_ADDRESS_SEVRER,
 	}
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpts)
+
 	go runTaskProcessor(redisOpts, store)
 
 	server, err := api.NewServer(store, env, taskDistributor)

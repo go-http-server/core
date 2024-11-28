@@ -10,6 +10,8 @@ import (
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/go-http-server/core/utils"
+	"github.com/go-http-server/core/worker"
+	"github.com/hibiken/asynq"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -107,7 +109,13 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		Code:         txResult.User.CodeVerifyEmail.String,
 		Fullname:     txResult.User.FullName,
 	}
-	err = server.taskDistributor.DistributeTaskSendVerifyAccount(ctx, taskPayload)
+
+	opts := []asynq.Option{
+		asynq.MaxRetry(10),
+		asynq.ProcessIn(10 * time.Second),
+		asynq.Queue(worker.QueueCritical),
+	}
+	err = server.taskDistributor.DistributeTaskSendVerifyAccount(ctx, taskPayload, opts...)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
