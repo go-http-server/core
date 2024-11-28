@@ -33,7 +33,7 @@ func NewGmailSender(name, emailAddress, emailAppPassword string) EmailSender {
 	}
 }
 
-// WARN: pathTemplate is exactly is root project, example: ./templates/verify_account.html
+// WARN: pathTemplate is exactly is root project, example: ./templates/verify_account.html. If use test, U must be use absolute path.
 func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, receiver UserReceive) error {
 	htmlTemplate, err := template.ParseFiles(pathTemplate)
 	if err != nil {
