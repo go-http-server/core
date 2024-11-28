@@ -4,12 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 
-	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/hibiken/asynq"
-	"github.com/jackc/pgx/v5"
+	"github.com/rs/zerolog/log"
 )
 
 func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyAccount(
@@ -28,7 +26,9 @@ func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyAccount(
 		return fmt.Errorf("[ERROR_ENQUEUE_CONTEXT] - [%s]: %s", TaskSendVerifyAccount, err)
 	}
 
-	log.Printf("ENQUEUED_TASK: [TYPE]: %s\n[PAYLOAD]: %s\n[QUEUE]: %s\n[MAX_RETRY]: %d", task.Type(), task.Payload(), taskInfo.Queue, taskInfo.MaxRetry)
+	log.Info().Str("[TYPE]", task.Type()).Str("[TASK]", TaskSendVerifyAccount).
+		Bytes("[PAYLOAD]", task.Payload()).Str("[QUEUE]", taskInfo.Queue).
+		Int("[MAX_RETRY]", taskInfo.MaxRetry).Msg("ENQUEUED_TASK")
 
 	return nil
 }
@@ -40,19 +40,8 @@ func (processor *RedisTaskProcessor) ProcessTaskSendEmailVerifyAccount(ctx conte
 		return fmt.Errorf("[ERROR_PROCESS_TASK] - [%s]: failed Unmarshal payload: %s %w", TaskSendVerifyAccount, err, asynq.SkipRetry)
 	}
 
-	user, err := processor.store.GetUser(ctx, database.GetUserParams{
-		Username: payload.Username,
-		Email:    payload.EmailAddress,
-	})
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return fmt.Errorf("[ERROR_PROCESS_TASK] - [%s]: Not found user %w", TaskSendVerifyAccount, asynq.SkipRetry)
-		}
+	log.Info().Str("[TYPE]", task.Type()).Str("[TASK]", TaskSendVerifyAccount).Bytes("[PAYLOAD]", task.Payload())
 
-		return fmt.Errorf("[ERROR_PROCESS_TASK] - [%s]: Failed get user: %s", TaskSendVerifyAccount, err)
-	}
-
-	log.Printf("PROCESS_TASK: [TYPE]: %s\n[PAYLOAD]: %s\n[EMAIL]: %s", task.Type(), task.Payload(), user.Email)
 	err = processor.sender.SendWithTemplate(
 		"[Go Core] Kích hoạt tài khoản",
 		"./templates/verify_account.html",
