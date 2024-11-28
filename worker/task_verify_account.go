@@ -19,13 +19,13 @@ func (distributor *RedisTaskDistributor) DistributeTaskSendVerifyAccount(
 ) error {
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
-		return fmt.Errorf("[ERROR_TASK]: [%s]: failed to marshal payload: %s", TaskSendVerifyAccount, err)
+		return fmt.Errorf("[ERROR_TASK] - [%s]: failed to marshal payload: %s", TaskSendVerifyAccount, err)
 	}
 
 	task := asynq.NewTask(TaskSendVerifyAccount, jsonPayload, opts...)
 	taskInfo, err := distributor.client.EnqueueContext(ctx, task, opts...)
 	if err != nil {
-		return fmt.Errorf("[ERROR_ENQUEUE_CONTEXT]: [%s]: %s", TaskSendVerifyAccount, err)
+		return fmt.Errorf("[ERROR_ENQUEUE_CONTEXT] - [%s]: %s", TaskSendVerifyAccount, err)
 	}
 
 	log.Printf("ENQUEUED_TASK: [TYPE]: %s\n[PAYLOAD]: %s\n[QUEUE]: %s\n[MAX_RETRY]: %d", task.Type(), task.Payload(), taskInfo.Queue, taskInfo.MaxRetry)
