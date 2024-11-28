@@ -69,15 +69,28 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 			CodeVerifyEmail: pgtype.Text{String: utils.RandomCode(), Valid: true},
 		},
 		AfterCreate: func(u database.User) error {
-			subject := "[Go core] Kích hoạt tài khoản"
-			pathTemplate := "./templates/verify_email.html"
-			to := mailer.UserReceive{
+			// subject := "[Go core] Kích hoạt tài khoản"
+			// pathTemplate := "./templates/verify_email.html"
+			// to := mailer.UserReceive{
+			// 	Username:     u.Username,
+			// 	EmailAddress: u.Email,
+			// 	Code:         u.CodeVerifyEmail.String,
+			// 	Fullname:     u.FullName,
+			// }
+			// return server.emailSender.SendWithTemplate(subject, pathTemplate, to, []string{})
+			taskPayload := &mailer.UserReceive{
 				Username:     u.Username,
 				EmailAddress: u.Email,
 				Code:         u.CodeVerifyEmail.String,
 				Fullname:     u.FullName,
 			}
-			return server.emailSender.SendWithTemplate(subject, pathTemplate, to, []string{})
+
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10 * time.Second),
+				asynq.Queue(worker.QueueCritical),
+			}
+			return server.taskDistributor.DistributeTaskSendVerifyAccount(ctx, taskPayload, opts...)
 		},
 	}
 
@@ -101,23 +114,6 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
-		return
-	}
-	taskPayload := &mailer.UserReceive{
-		Username:     txResult.User.Username,
-		EmailAddress: txResult.User.Email,
-		Code:         txResult.User.CodeVerifyEmail.String,
-		Fullname:     txResult.User.FullName,
-	}
-
-	opts := []asynq.Option{
-		asynq.MaxRetry(10),
-		asynq.ProcessIn(10 * time.Second),
-		asynq.Queue(worker.QueueCritical),
-	}
-	err = server.taskDistributor.DistributeTaskSendVerifyAccount(ctx, taskPayload, opts...)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
 
