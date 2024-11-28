@@ -52,8 +52,15 @@ func (processor *RedisTaskProcessor) ProcessTaskSendEmailVerifyAccount(ctx conte
 		return fmt.Errorf("[ERROR_PROCESS_TASK] - [%s]: Failed get user: %s", TaskSendVerifyAccount, err)
 	}
 
-	// TODO: Send email to user
 	log.Printf("PROCESS_TASK: [TYPE]: %s\n[PAYLOAD]: %s\n[EMAIL]: %s", task.Type(), task.Payload(), user.Email)
+	err = processor.sender.SendWithTemplate(
+		"[Go Core] Kích hoạt tài khoản",
+		"./templates/verify_account.html",
+		payload,
+	)
+	if err != nil {
+		return fmt.Errorf("[ERROR_PROCESS_TASK] - [%s]: %s", TaskSendVerifyAccount, err)
+	}
 
 	return nil
 }

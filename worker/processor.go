@@ -4,6 +4,7 @@ import (
 	"context"
 
 	database "github.com/go-http-server/core/internal/database/sqlc"
+	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/hibiken/asynq"
 )
 
@@ -20,9 +21,10 @@ type TaskProcessor interface {
 type RedisTaskProcessor struct {
 	server *asynq.Server
 	store  database.Store
+	sender mailer.EmailSender
 }
 
-func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store) TaskProcessor {
+func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender) TaskProcessor {
 	server := asynq.NewServer(redisOpts, asynq.Config{
 		Queues: map[string]int{
 			QueueCritical: 10,
@@ -33,6 +35,7 @@ func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store)
 	return &RedisTaskProcessor{
 		server: server,
 		store:  store,
+		sender: sender,
 	}
 }
 

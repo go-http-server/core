@@ -14,12 +14,13 @@ func TestSendMailWithTemplate(t *testing.T) {
 
 	sender := NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)
 	require.NotNil(t, sender)
-	to := UserReceive{
+	receiver := UserReceive{
 		Username:     utils.RandomString(6),
 		EmailAddress: "21A100100257@students.hou.edu.vn",
 		Code:         utils.RandomCode(),
 		Fullname:     "Pham Hai Nam",
+		AttachFiles:  []string{"../../../docker-compose.yml"},
 	}
-	err = sender.SendWithTemplate("[Go core] Kích hoạt tài khoản", "../../../templates/verify_email.html", to, []string{"../../../docker-compose.yml"})
+	err = sender.SendWithTemplate("[Go core] Kích hoạt tài khoản", "../../../templates/verify_account.html", receiver)
 	require.NoError(t, err)
 }

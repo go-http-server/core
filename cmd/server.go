@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-http-server/core/api"
 	database "github.com/go-http-server/core/internal/database/sqlc"
+	"github.com/go-http-server/core/plugin/pkg/mailer"
 	"github.com/go-http-server/core/utils"
 	"github.com/go-http-server/core/worker"
 	"github.com/hibiken/asynq"
@@ -27,9 +28,11 @@ func main() {
 	redisOpts := asynq.RedisClientOpt{
 		Addr: env.REDIS_ADDRESS_SEVRER,
 	}
+
+	emailSender := mailer.NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpts)
 
-	go runTaskProcessor(redisOpts, store)
+	go runTaskProcessor(redisOpts, store, emailSender)
 
 	server, err := api.NewServer(store, env, taskDistributor)
 	if err != nil {
@@ -38,8 +41,8 @@ func main() {
 	server.StartServer(env.HTTP_SERVER_ADDRESS)
 }
 
-func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store) {
-	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store)
+func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender) {
+	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store, sender)
 	log.Println("Start task processor")
 
 	err := taskProcessor.Start()

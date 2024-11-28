@@ -8,14 +8,15 @@ import (
 )
 
 type UserReceive struct {
-	Username     string `json:"username"`
-	EmailAddress string `json:"email_address"`
-	Code         string `json:"code"`
-	Fullname     string `json:"full_name"`
+	Username     string   `json:"username"`
+	EmailAddress string   `json:"email_address"`
+	Code         string   `json:"code"`
+	Fullname     string   `json:"full_name"`
+	AttachFiles  []string `json:"attach_files"`
 }
 
 type EmailSender interface {
-	SendWithTemplate(subject, pathTemplate string, to UserReceive, attachFiles []string) error
+	SendWithTemplate(subject, pathTemplate string, to UserReceive) error
 }
 
 type GmailSender struct {
@@ -32,7 +33,8 @@ func NewGmailSender(name, emailAddress, emailAppPassword string) EmailSender {
 	}
 }
 
-func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, to UserReceive, attachFiles []string) error {
+// WARN: pathTemplate is exactly is root project, example: ./templates/verify_account.html
+func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, receiver UserReceive) error {
 	htmlTemplate, err := template.ParseFiles(pathTemplate)
 	if err != nil {
 		return fmt.Errorf("Error with path template file: %s", err)
@@ -45,7 +47,7 @@ func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, to User
 	if err := message.FromFormat(sender.name, sender.emailAddress); err != nil {
 		return fmt.Errorf("failed to set formatted FROM address: %s", err)
 	}
-	if err := message.AddToFormat(to.Fullname, to.EmailAddress); err != nil {
+	if err := message.AddToFormat(receiver.Fullname, receiver.EmailAddress); err != nil {
 		return fmt.Errorf("failed to set formatted TO address: %s", err)
 	}
 
@@ -53,11 +55,11 @@ func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, to User
 	message.SetDate()
 
 	message.Subject(subject)
-	if err := message.AddAlternativeHTMLTemplate(htmlTemplate, to); err != nil {
+	if err := message.AddAlternativeHTMLTemplate(htmlTemplate, receiver); err != nil {
 		return fmt.Errorf("failed to add HTML template to mail body: %s", err)
 	}
 
-	for _, filePath := range attachFiles {
+	for _, filePath := range receiver.AttachFiles {
 		message.AttachFile(filePath, mail.WithFileDescription("From Go with love"))
 	}
 
