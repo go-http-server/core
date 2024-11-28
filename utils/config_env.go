@@ -14,6 +14,7 @@ type EnviromentVariables struct {
 	EMAIL_ADDRESS_SENDER  string        `mapstructure:"EMAIL_ADDRESS_SENDER"`
 	EMAIL_PASSWORD_SENDER string        `mapstructure:"EMAIL_PASSWORD_SENDER"`
 	EMAIL_USERNAME_SENDER string        `mapstructure:"EMAIL_USERNAME_SENDER"`
+	REDIS_ADDRESS_SEVRER  string        `mapstructure:"REDIS_ADDRESS_SEVRER"`
 }
 
 func LoadEnviromentVariables(path string) (config EnviromentVariables, err error) {
