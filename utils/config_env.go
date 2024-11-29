@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type EnviromentVariables struct {
+type EnvironmentVariables struct {
 	DB_SOURCE             string        `mapstructure:"DB_SOURCE"`
 	ENVIRONMENT           string        `mapstructure:"ENVIRONMENT"`
 	HTTP_SERVER_ADDRESS   string        `mapstructure:"HTTP_SERVER_ADDRESS"`
@@ -17,7 +17,7 @@ type EnviromentVariables struct {
 	REDIS_ADDRESS_SEVRER  string        `mapstructure:"REDIS_ADDRESS_SEVRER"`
 }
 
-func LoadEnviromentVariables(path string) (config EnviromentVariables, err error) {
+func LoadEnviromentVariables(path string) (config EnvironmentVariables, err error) {
 	viper.AddConfigPath(path)
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env") // json, xml, ...

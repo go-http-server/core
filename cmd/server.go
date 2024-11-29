@@ -18,9 +18,9 @@ import (
 func main() {
 	env, err := utils.LoadEnviromentVariables("./")
 	if err != nil {
-		log.Fatal().Err(err).Msg("Cannot load enviroment variables")
+		log.Fatal().Err(err).Msg("Cannot load environment variables")
 	}
-	if env.ENVIRONMENT != "product" {
+	if env.ENVIRONMENT != utils.ProductionEnvironment {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 

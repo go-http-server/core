@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	time.Local = loc
 	env, err := utils.LoadEnviromentVariables("../../../")
 	if err != nil {
-		log.Fatal("Cannot load enviroment variables file: ", err)
+		log.Fatal("Cannot load environment variables file: ", err)
 	}
 
 	connectionPool, err := pgxpool.New(context.Background(), env.DB_SOURCE)

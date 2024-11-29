@@ -12,7 +12,7 @@ import (
 )
 
 func newTestServer(t *testing.T, store database.Store) *Server {
-	env := utils.EnviromentVariables{
+	env := utils.EnvironmentVariables{
 		DB_SOURCE:           "",
 		HTTP_SERVER_ADDRESS: "",
 		TIME_EXPIRED_TOKEN:  30 * time.Minute,

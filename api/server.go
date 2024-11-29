@@ -12,12 +12,12 @@ import (
 type Server struct {
 	store           database.Store
 	router          *gin.Engine
-	env             utils.EnviromentVariables
+	env             utils.EnvironmentVariables
 	tokenMaker      token.TokenMaker
 	taskDistributor worker.TaskDistributor
 }
 
-func NewServer(store database.Store, env utils.EnviromentVariables, taskDistributor worker.TaskDistributor) (*Server, error) {
+func NewServer(store database.Store, env utils.EnvironmentVariables, taskDistributor worker.TaskDistributor) (*Server, error) {
 	privateKey := paseto.NewV4AsymmetricSecretKey()
 	parser := paseto.NewParserWithoutExpiryCheck()
 	tokenMaker := token.NewPasetoMaker(privateKey, parser)
@@ -34,7 +34,7 @@ func NewServer(store database.Store, env utils.EnviromentVariables, taskDistribu
 }
 
 func (server *Server) setupRouter() {
-	if server.env.ENVIRONMENT == "product" {
+	if server.env.ENVIRONMENT == utils.ProductionEnvironment {
 		gin.DisableConsoleColor()
 	}
 	router := gin.Default()
