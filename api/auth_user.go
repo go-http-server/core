@@ -69,15 +69,6 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 			CodeVerifyEmail: pgtype.Text{String: utils.RandomCode(), Valid: true},
 		},
 		AfterCreate: func(u database.User) error {
-			// subject := "[Go core] Kích hoạt tài khoản"
-			// pathTemplate := "./templates/verify_email.html"
-			// to := mailer.UserReceive{
-			// 	Username:     u.Username,
-			// 	EmailAddress: u.Email,
-			// 	Code:         u.CodeVerifyEmail.String,
-			// 	Fullname:     u.FullName,
-			// }
-			// return server.emailSender.SendWithTemplate(subject, pathTemplate, to, []string{})
 			taskPayload := &mailer.UserReceive{
 				Username:     u.Username,
 				EmailAddress: u.Email,
@@ -128,12 +119,7 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		return
 	}
 
-	args := database.GetUserParams{
-		Username: req.Identifier,
-		Email:    req.Identifier,
-	}
-
-	user, err := server.store.GetUser(ctx, args)
+	user, err := server.store.GetUser(ctx, req.Identifier)
 	if err != nil {
 		if err.Error() == pgx.ErrNoRows.Error() {
 			ctx.JSON(http.StatusNotFound, errorResponse(errors.New("Khong tim thay nguoi dung nay")))

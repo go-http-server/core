@@ -52,12 +52,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUser(t *testing.T) {
 	randomUser := createRandomUser(t)
 
-	args := GetUserParams{
-		Username: randomUser.Username,
-		Email:    randomUser.Email,
-	}
-
-	userFromDB, err := testStore.GetUser(context.Background(), args)
+	userFromDB, err := testStore.GetUser(context.Background(), randomUser.Username)
 	require.NoError(t, err)
 	require.NotEmpty(t, userFromDB)
 	require.Equal(t, randomUser.Username, userFromDB.Username)

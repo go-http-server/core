@@ -1,5 +1,5 @@
 -- name: GetUser :one
-SELECT * FROM users WHERE username = $1 OR email = $2;
+SELECT * FROM users WHERE username = @identifier OR email = @identifier;
 
 -- name: CreateUser :one
 INSERT INTO users (
