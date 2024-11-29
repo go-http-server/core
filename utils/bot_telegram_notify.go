@@ -40,7 +40,7 @@ func (bot BotTelegram) SendMessage(message string) error {
 
 	_, err = http.Post(urlSendNotify, "application/json", reader)
 	if err != nil {
-		return fmt.Errorf("Cannot request to bot tele:", err)
+		return fmt.Errorf("Cannot request to bot tele: %s", err)
 	}
 
 	return nil

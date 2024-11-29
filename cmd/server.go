@@ -37,7 +37,9 @@ func main() {
 	emailSender := mailer.NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpts)
 
-	go runTaskProcessor(redisOpts, store, emailSender)
+	bot := utils.NewBotTelegramService(env.TELEGRAM_BOT_TOKEN, env.TELEGRAM_CHAT_ID)
+
+	go runTaskProcessor(redisOpts, store, emailSender, bot)
 
 	server, err := api.NewServer(store, env, taskDistributor)
 	if err != nil {
@@ -46,8 +48,8 @@ func main() {
 	server.StartServer(env.HTTP_SERVER_ADDRESS)
 }
 
-func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender) {
-	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store, sender)
+func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot *utils.BotTelegram) {
+	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store, sender, bot)
 	log.Info().Msg("Start task processor")
 
 	err := taskProcessor.Start()

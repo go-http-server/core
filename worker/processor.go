@@ -5,6 +5,7 @@ import (
 
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/mailer"
+	"github.com/go-http-server/core/utils"
 	"github.com/hibiken/asynq"
 	"github.com/rs/zerolog/log"
 )
@@ -25,7 +26,7 @@ type RedisTaskProcessor struct {
 	sender mailer.EmailSender
 }
 
-func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender) TaskProcessor {
+func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot *utils.BotTelegram) TaskProcessor {
 	server := asynq.NewServer(redisOpts, asynq.Config{
 		Queues: map[string]int{
 			QueueCritical: 10,
@@ -35,6 +36,7 @@ func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store,
 			log.Error().Err(err).Str("[PROCESS_TASK]", TaskSendVerifyAccount).
 				Str("[TYPE]", task.Type()).
 				Bytes("[PAYLOAD]", task.Payload())
+			// TODO: call send message from bot telegram in here
 		}),
 		Logger: NewLoggerRedisTask(),
 	})
