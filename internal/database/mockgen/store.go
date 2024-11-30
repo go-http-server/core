@@ -13,7 +13,7 @@ import (
 	context "context"
 	reflect "reflect"
 
-	sqlc "github.com/go-http-server/core/internal/database/sqlc"
+	database "github.com/go-http-server/core/internal/database/sqlc"
 	gomock "go.uber.org/mock/gomock"
 )
 
@@ -42,10 +42,10 @@ func (m *MockStore) EXPECT() *MockStoreMockRecorder {
 }
 
 // CreateAccessPath mocks base method.
-func (m *MockStore) CreateAccessPath(ctx context.Context, arg sqlc.CreateAccessPathParams) (sqlc.AccessPath, error) {
+func (m *MockStore) CreateAccessPath(ctx context.Context, arg database.CreateAccessPathParams) (database.AccessPath, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAccessPath", ctx, arg)
-	ret0, _ := ret[0].(sqlc.AccessPath)
+	ret0, _ := ret[0].(database.AccessPath)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -57,10 +57,10 @@ func (mr *MockStoreMockRecorder) CreateAccessPath(ctx, arg any) *gomock.Call {
 }
 
 // CreatePath mocks base method.
-func (m *MockStore) CreatePath(ctx context.Context, arg sqlc.CreatePathParams) (sqlc.Path, error) {
+func (m *MockStore) CreatePath(ctx context.Context, arg database.CreatePathParams) (database.Path, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreatePath", ctx, arg)
-	ret0, _ := ret[0].(sqlc.Path)
+	ret0, _ := ret[0].(database.Path)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -72,10 +72,10 @@ func (mr *MockStoreMockRecorder) CreatePath(ctx, arg any) *gomock.Call {
 }
 
 // CreateRole mocks base method.
-func (m *MockStore) CreateRole(ctx context.Context, arg sqlc.CreateRoleParams) (sqlc.Role, error) {
+func (m *MockStore) CreateRole(ctx context.Context, arg database.CreateRoleParams) (database.Role, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateRole", ctx, arg)
-	ret0, _ := ret[0].(sqlc.Role)
+	ret0, _ := ret[0].(database.Role)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -87,10 +87,10 @@ func (mr *MockStoreMockRecorder) CreateRole(ctx, arg any) *gomock.Call {
 }
 
 // CreateUser mocks base method.
-func (m *MockStore) CreateUser(ctx context.Context, arg sqlc.CreateUserParams) (sqlc.User, error) {
+func (m *MockStore) CreateUser(ctx context.Context, arg database.CreateUserParams) (database.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUser", ctx, arg)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(database.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -102,10 +102,10 @@ func (mr *MockStoreMockRecorder) CreateUser(ctx, arg any) *gomock.Call {
 }
 
 // CreateUserTX mocks base method.
-func (m *MockStore) CreateUserTX(arg0 context.Context, arg1 sqlc.CreateUserTXParams) (sqlc.CreateUserTXResult, error) {
+func (m *MockStore) CreateUserTX(arg0 context.Context, arg1 database.CreateUserTXParams) (database.CreateUserTXResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateUserTX", arg0, arg1)
-	ret0, _ := ret[0].(sqlc.CreateUserTXResult)
+	ret0, _ := ret[0].(database.CreateUserTXResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -131,10 +131,10 @@ func (mr *MockStoreMockRecorder) DeleteAccessPath(ctx, id any) *gomock.Call {
 }
 
 // GetAccessPath mocks base method.
-func (m *MockStore) GetAccessPath(ctx context.Context, roleID int64) ([]sqlc.AccessPath, error) {
+func (m *MockStore) GetAccessPath(ctx context.Context, roleID int64) ([]database.AccessPath, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetAccessPath", ctx, roleID)
-	ret0, _ := ret[0].([]sqlc.AccessPath)
+	ret0, _ := ret[0].([]database.AccessPath)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -146,10 +146,10 @@ func (mr *MockStoreMockRecorder) GetAccessPath(ctx, roleID any) *gomock.Call {
 }
 
 // GetOnePath mocks base method.
-func (m *MockStore) GetOnePath(ctx context.Context, id int64) (sqlc.Path, error) {
+func (m *MockStore) GetOnePath(ctx context.Context, id int64) (database.Path, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOnePath", ctx, id)
-	ret0, _ := ret[0].(sqlc.Path)
+	ret0, _ := ret[0].(database.Path)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -161,10 +161,10 @@ func (mr *MockStoreMockRecorder) GetOnePath(ctx, id any) *gomock.Call {
 }
 
 // GetOneRole mocks base method.
-func (m *MockStore) GetOneRole(ctx context.Context, id int64) (sqlc.Role, error) {
+func (m *MockStore) GetOneRole(ctx context.Context, id int64) (database.Role, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetOneRole", ctx, id)
-	ret0, _ := ret[0].(sqlc.Role)
+	ret0, _ := ret[0].(database.Role)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -176,10 +176,10 @@ func (mr *MockStoreMockRecorder) GetOneRole(ctx, id any) *gomock.Call {
 }
 
 // GetRoles mocks base method.
-func (m *MockStore) GetRoles(ctx context.Context, arg sqlc.GetRolesParams) ([]sqlc.Role, error) {
+func (m *MockStore) GetRoles(ctx context.Context, arg database.GetRolesParams) ([]database.Role, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetRoles", ctx, arg)
-	ret0, _ := ret[0].([]sqlc.Role)
+	ret0, _ := ret[0].([]database.Role)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -191,10 +191,10 @@ func (mr *MockStoreMockRecorder) GetRoles(ctx, arg any) *gomock.Call {
 }
 
 // GetUser mocks base method.
-func (m *MockStore) GetUser(ctx context.Context, identifier string) (sqlc.User, error) {
+func (m *MockStore) GetUser(ctx context.Context, identifier string) (database.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetUser", ctx, identifier)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(database.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -206,10 +206,10 @@ func (mr *MockStoreMockRecorder) GetUser(ctx, identifier any) *gomock.Call {
 }
 
 // ListPaths mocks base method.
-func (m *MockStore) ListPaths(ctx context.Context, arg sqlc.ListPathsParams) ([]sqlc.Path, error) {
+func (m *MockStore) ListPaths(ctx context.Context, arg database.ListPathsParams) ([]database.Path, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListPaths", ctx, arg)
-	ret0, _ := ret[0].([]sqlc.Path)
+	ret0, _ := ret[0].([]database.Path)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -221,10 +221,10 @@ func (mr *MockStoreMockRecorder) ListPaths(ctx, arg any) *gomock.Call {
 }
 
 // UpdatePath mocks base method.
-func (m *MockStore) UpdatePath(ctx context.Context, arg sqlc.UpdatePathParams) (sqlc.Path, error) {
+func (m *MockStore) UpdatePath(ctx context.Context, arg database.UpdatePathParams) (database.Path, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdatePath", ctx, arg)
-	ret0, _ := ret[0].(sqlc.Path)
+	ret0, _ := ret[0].(database.Path)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -236,10 +236,10 @@ func (mr *MockStoreMockRecorder) UpdatePath(ctx, arg any) *gomock.Call {
 }
 
 // UpdateRole mocks base method.
-func (m *MockStore) UpdateRole(ctx context.Context, arg sqlc.UpdateRoleParams) (sqlc.Role, error) {
+func (m *MockStore) UpdateRole(ctx context.Context, arg database.UpdateRoleParams) (database.Role, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateRole", ctx, arg)
-	ret0, _ := ret[0].(sqlc.Role)
+	ret0, _ := ret[0].(database.Role)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -251,10 +251,10 @@ func (mr *MockStoreMockRecorder) UpdateRole(ctx, arg any) *gomock.Call {
 }
 
 // UpdateUser mocks base method.
-func (m *MockStore) UpdateUser(ctx context.Context, arg sqlc.UpdateUserParams) (sqlc.User, error) {
+func (m *MockStore) UpdateUser(ctx context.Context, arg database.UpdateUserParams) (database.User, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateUser", ctx, arg)
-	ret0, _ := ret[0].(sqlc.User)
+	ret0, _ := ret[0].(database.User)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
