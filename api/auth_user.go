@@ -65,7 +65,7 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 			HashedPassword:  hashPassword,
 			Email:           req.Email,
 			FullName:        req.FullName,
-			RoleID:          10,
+			RoleID:          utils.DefaultRoleID,
 			CodeVerifyEmail: pgtype.Text{String: utils.RandomCode(), Valid: true},
 		},
 		AfterCreate: func(u database.User) error {
