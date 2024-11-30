@@ -66,7 +66,7 @@ func (sender GmailSender) SendWithTemplate(subject, pathTemplate string, receive
 	client, err := mail.NewClient(
 		"smtp.gmail.com",
 		mail.WithSMTPAuth(mail.SMTPAuthPlain),
-		mail.WithTLSPolicy(mail.TLSMandatory),
+		mail.WithTLSPortPolicy(mail.TLSMandatory),
 		mail.WithUsername(sender.emailAddress),
 		mail.WithPassword(sender.emailAppPassword),
 	)

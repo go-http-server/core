@@ -8,6 +8,9 @@ import (
 )
 
 func TestSendMailWithTemplate(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 	env, err := utils.LoadEnviromentVariables("./../../../")
 	require.NoError(t, err)
 	require.NotEmpty(t, env)
