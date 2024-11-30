@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/mailer"
@@ -36,7 +37,9 @@ func NewRedisTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store,
 			log.Error().Err(err).Str("[PROCESS_TASK]", TaskSendVerifyAccount).
 				Str("[TYPE]", task.Type()).
 				Bytes("[PAYLOAD]", task.Payload())
-			// TODO: call send message from bot telegram in here
+
+			messageToBot := fmt.Sprintf("[PROCESS_TASK] - [%s]: [TYPE]: %s\n[PAYLOAD]: %s", TaskSendVerifyAccount, task.Type(), task.Payload())
+			bot.SendMessage(messageToBot)
 		}),
 		Logger: NewLoggerRedisTask(),
 	})
