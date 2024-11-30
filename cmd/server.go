@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/go-http-server/core/api"
 	database "github.com/go-http-server/core/internal/database/sqlc"
@@ -13,7 +15,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 )
+
+var interruptSignals = []os.Signal{
+	os.Interrupt,
+	syscall.SIGTERM,
+	syscall.SIGINT,
+}
 
 func main() {
 	env, err := utils.LoadEnviromentVariables("./")
@@ -24,7 +33,10 @@ func main() {
 		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	}
 
-	pool, err := pgxpool.New(context.Background(), env.DB_SOURCE)
+	signalContext, stop := signal.NotifyContext(context.Background(), interruptSignals...)
+	defer stop()
+
+	pool, err := pgxpool.New(signalContext, env.DB_SOURCE)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create pool to database")
 	}
@@ -36,19 +48,28 @@ func main() {
 
 	emailSender := mailer.NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)
 	taskDistributor := worker.NewRedisTaskDistributor(redisOpts)
-
 	bot := utils.NewBotTelegramService(env.TELEGRAM_BOT_TOKEN, env.TELEGRAM_CHAT_ID)
 
-	go runTaskProcessor(redisOpts, store, emailSender, bot)
+	waitGroup, signalContext := errgroup.WithContext(signalContext)
 
-	server, err := api.NewServer(store, env, taskDistributor)
+	// create tasks processor serve run queue.
+	runTaskProcessor(signalContext, waitGroup, redisOpts, store, emailSender, bot)
+
+	// Create and start new gin server.
+	server, err := api.NewServer(signalContext, waitGroup, store, env, taskDistributor)
 	if err != nil {
 		log.Fatal().Err(err).Msg("Cannot create new server")
 	}
-	server.StartServer(env.HTTP_SERVER_ADDRESS)
+
+	server.StartServer(signalContext, waitGroup, env.HTTP_SERVER_ADDRESS)
+
+	err = waitGroup.Wait()
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error from wait group")
+	}
 }
 
-func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot *utils.BotTelegram) {
+func runTaskProcessor(ctx context.Context, waitGroup *errgroup.Group, redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot *utils.BotTelegram) {
 	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store, sender, bot)
 	log.Info().Msg("Start task processor")
 
@@ -56,4 +77,13 @@ func runTaskProcessor(redisOpts asynq.RedisClientOpt, store database.Store, send
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed start task processor")
 	}
+
+	waitGroup.Go(func() error {
+		<-ctx.Done()
+		log.Info().Msg("Graceful shutdown task processor")
+
+		taskProcessor.Shutdown()
+		log.Info().Msg("Task processor is stopped")
+		return nil
+	})
 }

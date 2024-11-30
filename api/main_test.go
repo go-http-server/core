@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"os"
 	"testing"
 	"time"
@@ -18,7 +19,7 @@ func newTestServer(t *testing.T, store database.Store) *Server {
 		TIME_EXPIRED_TOKEN:  30 * time.Minute,
 	}
 
-	testServer, err := NewServer(store, env, nil)
+	testServer, err := NewServer(context.Background(), nil, store, env, nil)
 	require.NoError(t, err)
 	require.NotEmpty(t, testServer)
 

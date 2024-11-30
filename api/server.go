@@ -1,12 +1,18 @@
 package api
 
 import (
+	"context"
+	"errors"
+	"net/http"
+
 	"aidanwoods.dev/go-paseto"
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/token"
 	"github.com/go-http-server/core/utils"
 	"github.com/go-http-server/core/worker"
+	"github.com/rs/zerolog/log"
+	"golang.org/x/sync/errgroup"
 )
 
 type Server struct {
@@ -17,7 +23,13 @@ type Server struct {
 	taskDistributor worker.TaskDistributor
 }
 
-func NewServer(store database.Store, env utils.EnvironmentVariables, taskDistributor worker.TaskDistributor) (*Server, error) {
+func NewServer(
+	ctx context.Context,
+	waitGroup *errgroup.Group,
+	store database.Store,
+	env utils.EnvironmentVariables,
+	taskDistributor worker.TaskDistributor,
+) (*Server, error) {
 	privateKey := paseto.NewV4AsymmetricSecretKey()
 	parser := paseto.NewParserWithoutExpiryCheck()
 	tokenMaker := token.NewPasetoMaker(privateKey, parser)
@@ -57,8 +69,39 @@ func (server *Server) setupRouter() {
 	server.router = router
 }
 
-func (server *Server) StartServer(address string) error {
-	return server.router.Run(address)
+func (server *Server) StartServer(ctx context.Context, waitGroup *errgroup.Group, address string) {
+	httpServer := &http.Server{
+		Addr:    address,
+		Handler: server.router,
+	}
+
+	waitGroup.Go(func() error {
+		log.Info().Msgf("Start HTTP Server at %s", httpServer.Addr)
+		err := httpServer.ListenAndServe()
+		if err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				return nil
+			}
+			log.Error().Err(err).Msg("HTTP Server failed to serve")
+			return err
+		}
+
+		return nil
+	})
+
+	waitGroup.Go(func() error {
+		<-ctx.Done()
+		log.Info().Msg("Graceful shutdown HTTP server")
+
+		err := httpServer.Shutdown(context.Background())
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to shutdown HTTP server")
+			return err
+		}
+
+		log.Info().Msg("HTTP Server was stopped")
+		return nil
+	})
 }
 
 func errorResponse(err error) gin.H {
