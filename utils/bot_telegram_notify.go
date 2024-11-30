@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+type Bot interface {
+	SendMessage(message string) error
+}
+
 type BotTelegram struct {
 	BotToken string
 	ChatID   string
@@ -17,7 +21,7 @@ type PayloadBotTelegram struct {
 	Text   string `json:"text"`
 }
 
-func NewBotTelegramService(token, chatID string) *BotTelegram {
+func NewBotTelegramService(token, chatID string) Bot {
 	return &BotTelegram{
 		BotToken: token,
 		ChatID:   chatID,

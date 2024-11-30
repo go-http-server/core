@@ -69,7 +69,7 @@ func main() {
 	}
 }
 
-func runTaskProcessor(ctx context.Context, waitGroup *errgroup.Group, redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot *utils.BotTelegram) {
+func runTaskProcessor(ctx context.Context, waitGroup *errgroup.Group, redisOpts asynq.RedisClientOpt, store database.Store, sender mailer.EmailSender, bot utils.Bot) {
 	taskProcessor := worker.NewRedisTaskProcessor(redisOpts, store, sender, bot)
 	log.Info().Msg("Start task processor")
 
