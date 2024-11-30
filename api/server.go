@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	"aidanwoods.dev/go-paseto"
 	"github.com/gin-gonic/gin"
@@ -71,8 +72,11 @@ func (server *Server) setupRouter() {
 
 func (server *Server) StartServer(ctx context.Context, waitGroup *errgroup.Group, address string) {
 	httpServer := &http.Server{
-		Addr:    address,
-		Handler: server.router,
+		Addr:           address,
+		Handler:        server.router,
+		ReadTimeout:    15 * time.Second,
+		WriteTimeout:   15 * time.Second,
+		MaxHeaderBytes: 2 << 20, // 2 MiB
 	}
 
 	waitGroup.Go(func() error {
