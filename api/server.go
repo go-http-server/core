@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"aidanwoods.dev/go-paseto"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	database "github.com/go-http-server/core/internal/database/sqlc"
 	"github.com/go-http-server/core/plugin/pkg/token"
@@ -51,12 +52,24 @@ func (server *Server) setupRouter() {
 		gin.DisableConsoleColor()
 	}
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowAllOrigins:  true,
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+		AllowCredentials: false,
+		AllowHeaders:     []string{"Origin", "Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length", "Accept-Language"},
+	}))
 
 	api := router.Group("/api/v1")
 	{
 		noRequiredAuthRoute := api.Group("/")
 		noRequiredAuthRoute.POST("/auth/register", server.RegisterUser)
 		noRequiredAuthRoute.POST("/auth/login", server.LoginUser)
+
+		requireAuthRoute := api.Group("/")
+		requireAuthRoute.Use(authMiddleware(server.tokenMaker))
+
+		requireAuthRoute.POST("/test-auth", server.TestAuth)
 	}
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.JSON(200, gin.H{

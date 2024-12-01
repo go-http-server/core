@@ -159,3 +159,9 @@ func (server *Server) LoginUser(ctx *gin.Context) {
 		},
 	})
 }
+
+func (server *Server) TestAuth(ctx *gin.Context) {
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "success auth",
+	})
+}
