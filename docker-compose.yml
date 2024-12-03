@@ -34,8 +34,11 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:7-alpine
+    image: bitnami/redis:7.4.1
     container_name: redis_serve_gocore
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=redis_password
     ports:
       - 6379:6379
     networks:

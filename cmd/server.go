@@ -43,7 +43,8 @@ func main() {
 	store := database.NewStore(pool)
 
 	redisOpts := asynq.RedisClientOpt{
-		Addr: env.REDIS_ADDRESS_SERVER,
+		Addr:     env.REDIS_ADDRESS_SERVER,
+		Password: env.REDIS_PASSWORD_SERVER,
 	}
 
 	emailSender := mailer.NewGmailSender(env.EMAIL_USERNAME_SENDER, env.EMAIL_ADDRESS_SENDER, env.EMAIL_PASSWORD_SENDER)

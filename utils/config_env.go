@@ -15,6 +15,7 @@ type EnvironmentVariables struct {
 	EMAIL_PASSWORD_SENDER string        `mapstructure:"EMAIL_PASSWORD_SENDER"`
 	EMAIL_USERNAME_SENDER string        `mapstructure:"EMAIL_USERNAME_SENDER"`
 	REDIS_ADDRESS_SERVER  string        `mapstructure:"REDIS_ADDRESS_SERVER"`
+	REDIS_PASSWORD_SERVER string        `mapstructure:"REDIS_PASSWORD_SERVER"`
 	TELEGRAM_BOT_TOKEN    string        `mapstructure:"TELEGRAM_BOT_TOKEN"`
 	TELEGRAM_CHAT_ID      string        `mapstructure:"TELEGRAM_CHAT_ID"`
 }
