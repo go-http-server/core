@@ -4,7 +4,7 @@
     ],
     "swagger": "2.0",
     "info": {
-        "description": "Serve study",
+        "description": "Core API này là mình - Phạm Hải Nam làm ra với mục đích ban đầu là làm lại 1 khóa học mà mình đã học trước đó về golang. Mình chỉ tập trung vào phần mà mình chắc chắn sẽ sử dụng. Cái tên Core cũng là từ đó, core ở đây chỉ đơn giản là phần chắc chắn API nào cũng có, chẳng có gì cao siêu cả",
         "title": "[Go Core API]: Core API written by Go",
         "contact": {
             "name": "API Support",
@@ -19,6 +19,58 @@
     "host": "localhost:8080",
     "basePath": "/api/v1",
     "paths": {
+        "/api/v1/auth/login": {
+            "post": {
+                "description": "Đăng nhập tài khoản. Mình sử dụng Paseto và thuật toán mã hóa bất đối xứng để sign token. Hiểu đơn giản là nó dùng 1 khóa bí mật để tạo ra token và verify bằng khóa công khai. Nghe nó hơi ngược so với các thuật toán mã hóa khác, nhưng đó chính là cách nó hoạt động",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Đăng nhập",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "identifier",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.LoginUserRequestParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api.loginResponseBody"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/auth/register": {
             "post": {
                 "description": "Đăng ký tài khoản (gửi mail để xác nhận tài khoản)",
@@ -67,8 +119,29 @@
         }
     },
     "definitions": {
+        "api.LoginUserRequestParams": {
+            "type": "object",
+            "required": [
+                "identifier",
+                "password"
+            ],
+            "properties": {
+                "identifier": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 6,
+                    "example": "phamnam2003"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 256,
+                    "minLength": 6,
+                    "example": "Password@"
+                }
+            }
+        },
         "api.RegisterUserRequestParams": {
-            "description": "RegisterUserRequestParams để tạo mới 1 tài khoản",
+            "description": "RegisterUserRequestParams để tạo mới 1 tài khoản.",
             "type": "object",
             "required": [
                 "email",
@@ -100,6 +173,40 @@
                     "type": "string",
                     "minLength": 6,
                     "example": "phamnam2003"
+                }
+            }
+        },
+        "api.UserResponseLoginRequest": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "is_verified_email": {
+                    "type": "boolean"
+                },
+                "password_changed_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api.loginResponseBody": {
+            "type": "object",
+            "properties": {
+                "access_token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/api.UserResponseLoginRequest"
                 }
             }
         },

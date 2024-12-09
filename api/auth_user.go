@@ -16,7 +16,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-// @Description RegisterUserRequestParams để tạo mới 1 tài khoản
+// @Description RegisterUserRequestParams để tạo mới 1 tài khoản.
 type RegisterUserRequestParams struct {
 	Username string `json:"username" binding:"required,min=6,alphanum,lowercase" example:"phamnam2003"` // Tên đăng nhập
 	Email    string `json:"email" binding:"required,min=12,email" example:"namphamhai7@gmail.com"`      // Email
@@ -123,6 +123,18 @@ func (server *Server) RegisterUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, txResult.User)
 }
 
+// RegisterUser godoc
+// @Summary Đăng nhập
+// @Description Đăng nhập tài khoản. Mình sử dụng Paseto và thuật toán mã hóa bất đối xứng để sign token. Hiểu đơn giản là nó dùng 1 khóa bí mật để tạo ra token và verify bằng khóa công khai. Nghe nó hơi ngược so với các thuật toán mã hóa khác, nhưng đó chính là cách nó hoạt động
+// @Tags Authentication
+// @Produce json
+// @Accept json
+// @Param identifier body LoginUserRequestParams true "body"
+// @Success 200 {object} loginResponseBody
+// @Failure 404 {object} gin.H
+// @Failure 409 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/auth/login [post]
 func (server *Server) LoginUser(ctx *gin.Context) {
 	var req LoginUserRequestParams
 

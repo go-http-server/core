@@ -31,7 +31,7 @@ var interruptSignals = []os.Signal{
 // @contact.email namphamhai7@gmail.com
 // @license.name MIT
 // @license.url https://opensource.org/licenses/MIT
-// @description Serve study
+// @description Core API này là mình - Phạm Hải Nam làm ra với mục đích ban đầu là làm lại 1 khóa học mà mình đã học trước đó về golang. Mình chỉ tập trung vào phần mà mình chắc chắn sẽ sử dụng. Cái tên Core cũng là từ đó, core ở đây chỉ đơn giản là phần chắc chắn API nào cũng có, chẳng có gì cao siêu cả
 // @host localhost:8080
 // @BasePath /api/v1
 func main() {

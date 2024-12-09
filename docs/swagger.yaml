@@ -2,8 +2,24 @@ basePath: /api/v1
 consumes:
 - application/json
 definitions:
+  api.LoginUserRequestParams:
+    properties:
+      identifier:
+        example: phamnam2003
+        maxLength: 256
+        minLength: 6
+        type: string
+      password:
+        example: Password@
+        maxLength: 256
+        minLength: 6
+        type: string
+    required:
+    - identifier
+    - password
+    type: object
   api.RegisterUserRequestParams:
-    description: RegisterUserRequestParams để tạo mới 1 tài khoản
+    description: RegisterUserRequestParams để tạo mới 1 tài khoản.
     properties:
       email:
         description: Email
@@ -30,6 +46,28 @@ definitions:
     - full_name
     - password
     - username
+    type: object
+  api.UserResponseLoginRequest:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      is_verified_email:
+        type: boolean
+      password_changed_at:
+        type: string
+      username:
+        type: string
+    type: object
+  api.loginResponseBody:
+    properties:
+      access_token:
+        type: string
+      user:
+        $ref: '#/definitions/api.UserResponseLoginRequest'
     type: object
   database.User:
     properties:
@@ -91,13 +129,53 @@ info:
   contact:
     email: namphamhai7@gmail.com
     name: API Support
-  description: Serve study
+  description: Core API này là mình - Phạm Hải Nam làm ra với mục đích ban đầu là
+    làm lại 1 khóa học mà mình đã học trước đó về golang. Mình chỉ tập trung vào phần
+    mà mình chắc chắn sẽ sử dụng. Cái tên Core cũng là từ đó, core ở đây chỉ đơn giản
+    là phần chắc chắn API nào cũng có, chẳng có gì cao siêu cả
   license:
     name: MIT
     url: https://opensource.org/licenses/MIT
   title: '[Go Core API]: Core API written by Go'
   version: "1.0"
 paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Đăng nhập tài khoản. Mình sử dụng Paseto và thuật toán mã hóa bất
+        đối xứng để sign token. Hiểu đơn giản là nó dùng 1 khóa bí mật để tạo ra token
+        và verify bằng khóa công khai. Nghe nó hơi ngược so với các thuật toán mã
+        hóa khác, nhưng đó chính là cách nó hoạt động
+      parameters:
+      - description: body
+        in: body
+        name: identifier
+        required: true
+        schema:
+          $ref: '#/definitions/api.LoginUserRequestParams'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api.loginResponseBody'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/gin.H'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/gin.H'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/gin.H'
+      summary: Đăng nhập
+      tags:
+      - Authentication
   /api/v1/auth/register:
     post:
       consumes:
