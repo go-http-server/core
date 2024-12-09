@@ -59,10 +59,9 @@ services:
     ports:
       - 8080:8080
     environment:
-      GIN_MOD: "release"
+      GIN_MODE: "release"
       DB_SOURCE: "postgresql://postgres:phamnam123@postgresql_database:5432/core?sslmode=disable"
       ENVIRONMENT: "product"
-      REDIS_ADDRESS_SERVER: "redis_serve_gocore:6379"
     networks:
       - core-network
     depends_on:

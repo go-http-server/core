@@ -62,6 +62,7 @@ func (server *Server) setupRouter() {
 
 	api := router.Group("/api/v1")
 	{
+		api.StaticFile("/docs", "./docs/api-docs.html")
 		noRequiredAuthRoute := api.Group("/")
 		noRequiredAuthRoute.POST("/auth/register", server.RegisterUser)
 		noRequiredAuthRoute.POST("/auth/login", server.LoginUser)

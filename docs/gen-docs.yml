@@ -1,0 +1,93 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Core API
+  contact:
+    name: "Phạm Hải Nam"
+    email: namphamhai7@gmail.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  description: |
+    # Core api
+    This is core api written by golang
+servers:
+  - url: localhost:8080
+    description: Local and port
+paths:
+  /api/v1/auth/login:
+    post:
+      required: true
+      summary: "Login API"
+      description: "Login provide access token, sign by private key."
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginBody"
+      responses:
+        200:
+          description: Login success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accessToken:
+                    type: string
+                  user:
+                    type: object
+                    title: user
+                    description: "Thông tin người dùng"
+                    properties:
+                      username:
+                        type: string
+                        description: "Username"
+                        example: phamnam2003
+                required:
+                  - accessToken
+                  - user
+        404:
+          description: Not found user
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+        400:
+          description: Post cannot pass validate
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                required:
+                  - error
+
+components:
+  schemas:
+    LoginBody:
+      type: object
+      required:
+        - identifier
+        - password
+      properties:
+        identifier:
+          type: string
+          description: "Định danh người dùng (có thể là email hoặc username)"
+          minLength: 6
+          maxLength: 256
+          example: phamhainam
+        password:
+          type: string
+          description: "Mật khẩu"
+          minLength: 6
+          maxLength: 256
+          example: passwordForExample@123
