@@ -24,6 +24,16 @@ var interruptSignals = []os.Signal{
 	syscall.SIGINT,
 }
 
+// @title [Go Core API]: Core API written by Go
+// @version 1.0
+// @accept json
+// @contact.name API Support
+// @contact.email namphamhai7@gmail.com
+// @license.name MIT
+// @license.url https://opensource.org/licenses/MIT
+// @description Serve study
+// @host localhost:8080
+// @BasePath /api/v1
 func main() {
 	env, err := utils.LoadEnviromentVariables("./")
 	if err != nil {

@@ -1,0 +1,188 @@
+{
+    "consumes": [
+        "application/json"
+    ],
+    "swagger": "2.0",
+    "info": {
+        "description": "Serve study",
+        "title": "[Go Core API]: Core API written by Go",
+        "contact": {
+            "name": "API Support",
+            "email": "namphamhai7@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/api/v1/auth/register": {
+            "post": {
+                "description": "Đăng ký tài khoản (gửi mail để xác nhận tài khoản)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Đăng ký tài khoản",
+                "parameters": [
+                    {
+                        "description": "body",
+                        "name": "identifier",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api.RegisterUserRequestParams"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.User"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/gin.H"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api.RegisterUserRequestParams": {
+            "description": "RegisterUserRequestParams để tạo mới 1 tài khoản",
+            "type": "object",
+            "required": [
+                "email",
+                "full_name",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "email": {
+                    "description": "Email",
+                    "type": "string",
+                    "minLength": 12,
+                    "example": "namphamhai7@gmail.com"
+                },
+                "full_name": {
+                    "description": "Họ và tên",
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "Pham Hai Nam"
+                },
+                "password": {
+                    "description": "Mật khẩu",
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "Password@"
+                },
+                "username": {
+                    "description": "Tên đăng nhập",
+                    "type": "string",
+                    "minLength": 6,
+                    "example": "phamnam2003"
+                }
+            }
+        },
+        "database.User": {
+            "type": "object",
+            "properties": {
+                "code_reset_password": {
+                    "$ref": "#/definitions/pgtype.Text"
+                },
+                "code_verify_email": {
+                    "$ref": "#/definitions/pgtype.Text"
+                },
+                "created_at": {
+                    "$ref": "#/definitions/pgtype.Timestamp"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "full_name": {
+                    "type": "string"
+                },
+                "hashed_password": {
+                    "type": "string"
+                },
+                "is_verified_email": {
+                    "type": "boolean"
+                },
+                "password_changed_at": {
+                    "$ref": "#/definitions/pgtype.Timestamp"
+                },
+                "role_id": {
+                    "type": "integer"
+                },
+                "token": {
+                    "$ref": "#/definitions/pgtype.Text"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "gin.H": {
+            "type": "object",
+            "additionalProperties": {}
+        },
+        "pgtype.InfinityModifier": {
+            "type": "integer",
+            "enum": [
+                1,
+                0,
+                -1
+            ],
+            "x-enum-varnames": [
+                "Infinity",
+                "Finite",
+                "NegativeInfinity"
+            ]
+        },
+        "pgtype.Text": {
+            "type": "object",
+            "properties": {
+                "string": {
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "pgtype.Timestamp": {
+            "type": "object",
+            "properties": {
+                "infinityModifier": {
+                    "$ref": "#/definitions/pgtype.InfinityModifier"
+                },
+                "time": {
+                    "description": "Time zone will be ignored when encoding to PostgreSQL.",
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

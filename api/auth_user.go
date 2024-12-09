@@ -16,16 +16,17 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+// @Description RegisterUserRequestParams để tạo mới 1 tài khoản
 type RegisterUserRequestParams struct {
-	Username string `json:"username" binding:"required,min=6,alphanum,lowercase"`
-	Email    string `json:"email" binding:"required,min=12,email"`
-	Password string `json:"password" binding:"required,min=6,containsany=!@#$?&*"`
-	FullName string `json:"full_name" binding:"required,min=6"`
+	Username string `json:"username" binding:"required,min=6,alphanum,lowercase" example:"phamnam2003"` // Tên đăng nhập
+	Email    string `json:"email" binding:"required,min=12,email" example:"namphamhai7@gmail.com"`      // Email
+	Password string `json:"password" binding:"required,min=6,containsany=!@#$?&*" example:"Password@"`  // Mật khẩu
+	FullName string `json:"full_name" binding:"required,min=6" example:"Pham Hai Nam"`                  // Họ và tên
 }
 
 type LoginUserRequestParams struct {
-	Identifier string `json:"identifier" binding:"required,min=6"`
-	Password   string `json:"password" binding:"required,min=6,containsany=!@#$?&*"`
+	Identifier string `json:"identifier" binding:"required,min=6,max=256" example:"phamnam2003" `
+	Password   string `json:"password" binding:"required,min=6,containsany=!@#$?&*,max=256" example:"Password@"`
 }
 
 type UserResponseLoginRequest struct {
@@ -42,6 +43,17 @@ type loginResponseBody struct {
 	User        UserResponseLoginRequest `json:"user"`
 }
 
+// RegisterUser godoc
+// @Summary Đăng ký tài khoản
+// @Description Đăng ký tài khoản (gửi mail để xác nhận tài khoản)
+// @Tags Authentication
+// @Produce json
+// @Accept json
+// @Param identifier body RegisterUserRequestParams true "body"
+// @Success 200 {object} database.User
+// @Failure 409 {object} gin.H
+// @Failure 500 {object} gin.H
+// @Router /api/v1/auth/register [post]
 func (server *Server) RegisterUser(ctx *gin.Context) {
 	var req RegisterUserRequestParams
 	if err := ctx.ShouldBind(&req); err != nil {
